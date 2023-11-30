@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  demoapi:
+    build:
+      context: .
+    image: maven/builder:0.0.1
+    container_name: demoapi
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=demoapi      
+    volumes:
+      - "./src:/build/src"
+      - "./target:/build/target:cached"
+    command: "mvn spring-boot:run"
+    depends_on:
+      - host_db    
+  host_db:
+    container_name: host_db
+    image: "postgres:12"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=demoapi  
+    volumes:
+      - spring_dev_data:/var/lib/postgresql/data
+volumes:
+  spring_dev_data: {}
